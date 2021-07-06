@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">Calculator</string>
+    <string name="hint_zero">0</string>
+    <string name="number_zero">number zero</string>
+    <string name="number_one">number one</string>
+    <string name="number_two">number two</string>
+    <string name="number_three">number three</string>
+    <string name="number_four">number four</string>
+    <string name="number_five">number five</string>
+    <string name="number_six">number six</string>
+    <string name="number_seven">number seven</string>
+    <string name="number_eight">number eight</string>
+    <string name="number_nine">number nine</string>
+    <string name="btn_al">button clear all</string>
+    <string name="btn_backspace">button backspace</string>
+    <string name="btn_percent">button percent</string>
+    <string name="btn_divide">button divide</string>
+    <string name="btn_multiple">button multiple</string>
+    <string name="btn_minus">button minus</string>
+    <string name="btn_plus">button plus</string>
+    <string name="btn_equal">button equal</string>
+    <string name="dot">dot</string>
+    <string name="btn_expansion">button expansion calculator</string>
 </resources>
