@@ -53,10 +53,11 @@ class SimpleCalculatorFragment : Fragment() {
 
         for ((number, button) in numBtnMap) {
             button.setOnClickListener {
-                if (isZeroFirst())
-                    numbersText.setText(addNumber(number).toString())
-                else
-                    numbersText.text = numbersText.text.append(addNumber(number))
+                when {
+                    isZeroFirst() -> numbersText.setText(addNumber(number).toString())
+                    isZeroStandBeforeOperator() -> numbersText.text
+                    else -> numbersText.text = numbersText.text.append(addNumber(number))
+                }
             }
         }
 
@@ -106,6 +107,14 @@ class SimpleCalculatorFragment : Fragment() {
 
         return binding.root
     }
+
+    private fun isZeroStandBeforeOperator(): Boolean =
+        try {
+            numbersText.text.endsWith('0')
+                .and(numbersText.text[numbersText.length() - 2].code < 48)
+        } catch (exc: IndexOutOfBoundsException) {
+            false
+        }
 
     private fun isMathSymbolStands(): Boolean {
 
