@@ -1,6 +1,7 @@
 package mikhail.tulupov.application.calculator.ui.fragments
 
 import android.os.Bundle
+import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,11 +11,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import mikhail.tulupov.application.calculator.R
 import mikhail.tulupov.application.calculator.databinding.FragmentSimpleCalculatorBinding
+import java.lang.StringBuilder
 
 class SimpleCalculatorFragment : Fragment() {
 
     private lateinit var binding: FragmentSimpleCalculatorBinding
-    private lateinit var numBtnMap: Map<String, ImageButton>
+    private lateinit var numBtnMap: Map<Num, ImageButton>
     private lateinit var numbersText: EditText
 
     override fun onCreateView(
@@ -35,38 +37,59 @@ class SimpleCalculatorFragment : Fragment() {
         numbersText = binding.etNumber
 
         numBtnMap = mapOf(
-            "zero" to binding.ibNumberZero,
-            "one" to binding.ibNumberOne,
-            "two" to binding.ibNumberTwo,
-            "three" to binding.ibNumberThree,
-            "four" to binding.ibNumberFour,
-            "five" to binding.ibNumberFive,
-            "six" to binding.ibNumberSix,
-            "seven" to binding.ibNumberSeven,
-            "eight" to binding.ibNumberEight,
-            "nine" to binding.ibNumberNine
+            Num.ZERO to binding.ibNumberZero,
+            Num.ONE to binding.ibNumberOne,
+            Num.TWO to binding.ibNumberTwo,
+            Num.THREE to binding.ibNumberThree,
+            Num.FOUR to binding.ibNumberFour,
+            Num.FIVE to binding.ibNumberFive,
+            Num.SIX to binding.ibNumberSix,
+            Num.SEVEN to binding.ibNumberSeven,
+            Num.EIGHT to binding.ibNumberEight,
+            Num.NINE to binding.ibNumberNine
         )
 
         for ((number, view) in numBtnMap) {
             view.setOnClickListener {
-                numbersText.text = numbersText.text.append(addNumber(number))
+                if (isZeroFirst())
+                    numbersText.setText(addNumber(number).toString())
+                else
+                    numbersText.text = numbersText.text.append(addNumber(number))
             }
         }
 
         return binding.root
     }
 
+    private fun isZeroFirst(): Boolean =
+        (numbersText.length() == 1).and(numbersText.text.startsWith('0'))
+
     //method return equal number to key
-    private fun addNumber(number: String): Char = when (number) {
-        "zero" -> '0'
-        "one" -> '1'
-        "two" -> '2'
-        "three" -> '3'
-        "four" -> '4'
-        "five" -> '5'
-        "six" -> '6'
-        "seven" -> '7'
-        "eight" -> '8'
-        else -> '9'
+    private fun addNumber(number: Num): Char = when (number) {
+        Num.ZERO -> '0'
+        Num.ONE -> '1'
+        Num.TWO -> '2'
+        Num.THREE -> '3'
+        Num.FOUR -> '4'
+        Num.FIVE -> '5'
+        Num.SIX -> '6'
+        Num.SEVEN -> '7'
+        Num.EIGHT -> '8'
+        Num.NINE -> '9'
+    }
+
+    private enum class Num {
+        ZERO,
+        ONE,
+        TWO,
+        THREE,
+        FOUR,
+        FIVE,
+        SIX,
+        SEVEN,
+        EIGHT,
+        NINE
+
+
     }
 }
