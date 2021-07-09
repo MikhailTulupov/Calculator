@@ -11,6 +11,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import mikhail.tulupov.application.calculator.R
 import mikhail.tulupov.application.calculator.databinding.FragmentSimpleCalculatorBinding
+import java.lang.IndexOutOfBoundsException
 import java.lang.StringBuilder
 
 class SimpleCalculatorFragment : Fragment() {
@@ -58,7 +59,26 @@ class SimpleCalculatorFragment : Fragment() {
             }
         }
 
+        binding.apply {
+            ibBtnClearAll.setOnClickListener {
+                setEmptyText()
+            }
+            ibBtnBackspace.setOnClickListener {
+                try {
+                    numbersText.text =
+                        numbersText.text.delete(numbersText.length() - 1, numbersText.length())
+                } catch (exc: IndexOutOfBoundsException) {
+                    setEmptyText()
+                }
+
+            }
+        }
+
         return binding.root
+    }
+
+    private fun setEmptyText() {
+        numbersText.setText("")
     }
 
     private fun isZeroFirst(): Boolean =
