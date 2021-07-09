@@ -18,6 +18,7 @@ class SimpleCalculatorFragment : Fragment() {
 
     private lateinit var binding: FragmentSimpleCalculatorBinding
     private lateinit var numBtnMap: Map<Num, ImageButton>
+    private lateinit var mathOperationsBtnMap: Map<Operation, ImageButton>
     private lateinit var numbersText: EditText
 
     override fun onCreateView(
@@ -50,12 +51,41 @@ class SimpleCalculatorFragment : Fragment() {
             Num.NINE to binding.ibNumberNine
         )
 
-        for ((number, view) in numBtnMap) {
-            view.setOnClickListener {
+        for ((number, button) in numBtnMap) {
+            button.setOnClickListener {
                 if (isZeroFirst())
                     numbersText.setText(addNumber(number).toString())
                 else
                     numbersText.text = numbersText.text.append(addNumber(number))
+            }
+        }
+
+        mathOperationsBtnMap = mapOf(
+            Operation.DIVIDE to binding.ibBtnDivide,
+            Operation.MULTIPLE to binding.ibBtnMultiple,
+            Operation.MINUS to binding.ibBtnMinus,
+            Operation.PLUS to binding.ibBtnPlus
+        )
+
+        for ((operation, button) in mathOperationsBtnMap) {
+            button.setOnClickListener {
+                val symbol = when (operation) {
+                    Operation.DIVIDE -> '/'
+                    Operation.MULTIPLE -> '*'
+                    Operation.MINUS -> '-'
+                    Operation.PLUS -> '+'
+                }
+
+                numbersText.setText(
+                    when {
+                        isMathSymbolStands() -> StringBuilder(numbersText.text).deleteCharAt(
+                            numbersText.length() - 1
+                        ).append(symbol)
+                        numbersText.text.isEmpty() -> numbersText.text.append('0').append(symbol)
+
+                        else -> StringBuilder(numbersText.text).append(symbol).toString()
+                    }
+                )
             }
         }
 
@@ -75,6 +105,23 @@ class SimpleCalculatorFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    private fun isMathSymbolStands(): Boolean {
+
+        val mathOperations = charArrayOf('/', '*', '+', '-')
+
+        val sb = StringBuilder(numbersText.text)
+
+        for (operation in mathOperations) {
+            try {
+                if (sb[sb.length - 1] == operation)
+                    return true
+            } catch (exc: StringIndexOutOfBoundsException) {
+                return false
+            }
+        }
+        return false
     }
 
     private fun setEmptyText() {
@@ -111,5 +158,12 @@ class SimpleCalculatorFragment : Fragment() {
         NINE
 
 
+    }
+
+    private enum class Operation {
+        DIVIDE,
+        MULTIPLE,
+        MINUS,
+        PLUS
     }
 }
