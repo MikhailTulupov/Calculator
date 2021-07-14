@@ -2,6 +2,8 @@ package mikhail.tulupov.application.calculator.ui.fragments
 
 import android.os.Bundle
 import android.text.Editable
+import android.text.Spannable
+import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -53,11 +55,13 @@ class SimpleCalculatorFragment : Fragment() {
 
         for ((number, button) in numBtnMap) {
             button.setOnClickListener {
-                when {
-                    isZeroFirst() -> numbersText.setText(addNumber(number).toString())
-                    isZeroStandBeforeOperator() -> numbersText.text
-                    else -> numbersText.text = numbersText.text.append(addNumber(number))
+
+                numbersText.text = when {
+                    isZeroFirst() -> setNumber("1", addNumber(number).toString())
+                    isZeroStandBeforeOperator() -> setNumber("2", "")
+                    else -> setNumber("3", addNumber(number).toString())
                 }
+
             }
         }
 
@@ -77,16 +81,11 @@ class SimpleCalculatorFragment : Fragment() {
                     Operation.PLUS -> '+'
                 }
 
-                numbersText.setText(
-                    when {
-                        isMathSymbolStands() -> StringBuilder(numbersText.text).deleteCharAt(
-                            numbersText.length() - 1
-                        ).append(symbol)
-                        numbersText.text.isEmpty() -> numbersText.text.append('0').append(symbol)
-
-                        else -> StringBuilder(numbersText.text).append(symbol).toString()
-                    }
-                )
+                numbersText.text = when {
+                    isMathSymbolStands() -> setMathOperation("1", symbol.toString())
+                    numbersText.text.isEmpty() -> setMathOperation("2", "0".plus(symbol))
+                    else -> setMathOperation("3", symbol.toString())
+                }
             }
         }
 
@@ -108,6 +107,34 @@ class SimpleCalculatorFragment : Fragment() {
         return binding.root
     }
 
+    // method return string by the corresponding tag
+    private fun setMathOperation(tag: String, str: String): SpannableStringBuilder =
+        when (tag) {
+            // if math operation stands we change with symbol to another operation
+            "1" ->
+                SpannableStringBuilder(
+                    StringBuilder(numbersText.text)
+                        .deleteCharAt(numbersText.length() - 1)
+                )
+                    .append(str)
+            // if text is empty we add zero number and math operation after zero
+            "2" -> SpannableStringBuilder(str)
+            // else we add operation to text
+            else -> SpannableStringBuilder().append(numbersText.text).append(str)
+        }
+
+    // method return string by the corresponding tag
+    private fun setNumber(tag: String, str: String): SpannableStringBuilder =
+        when (tag) {
+            // if text start`s with zero we change zero to another number
+            "1" -> SpannableStringBuilder(str)
+            // if text is empty we add number
+            "2" -> SpannableStringBuilder(numbersText.text)
+            // else we add number to text
+            else -> SpannableStringBuilder(numbersText.text).append(str)
+        }
+
+    // checking whether the sign is before zero
     private fun isZeroStandBeforeOperator(): Boolean =
         try {
             numbersText.text.endsWith('0')
@@ -116,6 +143,8 @@ class SimpleCalculatorFragment : Fragment() {
             false
         }
 
+    /* checking whether there is a sign after the number,
+     if it is true we change the sign of the operation */
     private fun isMathSymbolStands(): Boolean {
 
         val mathOperations = charArrayOf('/', '*', '+', '-')
