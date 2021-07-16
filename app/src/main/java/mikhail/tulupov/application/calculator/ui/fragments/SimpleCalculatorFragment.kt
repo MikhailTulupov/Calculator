@@ -1,8 +1,6 @@
 package mikhail.tulupov.application.calculator.ui.fragments
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
@@ -102,6 +100,13 @@ class SimpleCalculatorFragment : Fragment() {
                 }
 
             }
+
+            ibBtnDot.setOnClickListener {
+                if (numbersText.text.isEmpty())
+                    numbersText.text = SpannableStringBuilder("0.")
+                else if (!isDotStandOnNumber())
+                    numbersText.text = SpannableStringBuilder(numbersText.text).append(".")
+            }
         }
 
         return binding.root
@@ -168,6 +173,33 @@ class SimpleCalculatorFragment : Fragment() {
 
     private fun isZeroFirst(): Boolean =
         (numbersText.length() == 1).and(numbersText.text.startsWith('0'))
+
+    // checking whether the dot is in the number
+    private fun isDotStandOnNumber(): Boolean {
+        val str = numbersText.text
+        val operations = charArrayOf('/', '*', '-', '+')
+        val lastIndexPoint: Int
+        var indexOperation = -2
+
+        for (operation in operations) { // find operation
+            if (str.lastIndexOf(operation) > indexOperation)
+                indexOperation = str.lastIndexOf(operation)
+        }
+
+        val subStr: String
+
+        try {
+            // if don't find operation return false and we can add dot
+            if (indexOperation < 0 && str.contains(Regex(".")))
+                return true
+            subStr = str.substring(indexOperation)
+        } catch (exc: StringIndexOutOfBoundsException) {
+            return true
+        }
+        // checking substring contain are dot
+        lastIndexPoint = subStr.lastIndexOf('.')
+        return lastIndexPoint != -1
+    }
 
     //method return equal number to key
     private fun addNumber(number: Num): Char = when (number) {
