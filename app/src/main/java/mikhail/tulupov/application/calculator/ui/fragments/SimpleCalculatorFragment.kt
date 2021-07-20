@@ -196,7 +196,7 @@ class SimpleCalculatorFragment : Fragment() {
         val str = numbersText.text
         val operations = charArrayOf('/', '*', '-', '+')
         val lastIndexPoint: Int
-        var indexOperation = -2
+        var indexOperation: Int = -1
 
         for (operation in operations) { // find operation
             if (str.lastIndexOf(operation) > indexOperation)
@@ -207,9 +207,12 @@ class SimpleCalculatorFragment : Fragment() {
 
         try {
             // if don't find operation return false and we can add dot
-            if (indexOperation < 0 && str.contains(Regex(".")))
+            if (indexOperation < 0 && str.contains('.'))
                 return true
-            subStr = str.substring(indexOperation)
+            else if (indexOperation < 0 && !str.contains('.'))
+                return false
+            else
+                subStr = str.substring(indexOperation)
         } catch (exc: StringIndexOutOfBoundsException) {
             return true
         }
