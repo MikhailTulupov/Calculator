@@ -7,12 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
+import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import mikhail.tulupov.application.calculator.R
 import mikhail.tulupov.application.calculator.databinding.FragmentSimpleCalculatorBinding
-import java.lang.IndexOutOfBoundsException
-import java.lang.StringBuilder
+import mikhail.tulupov.application.calculator.model.Calculator
+
 
 class SimpleCalculatorFragment : Fragment() {
 
@@ -37,6 +38,15 @@ class SimpleCalculatorFragment : Fragment() {
                 )
 
         numbersText = binding.etNumber
+
+        numbersText.addTextChangedListener(onTextChanged = { text, _, _, count ->
+            run {
+                numbersText.setSelection(numbersText.text.length)
+                if (text!!.contains("can`t divide by zero", true) && count > 22)
+                    numbersText.setText(text.last().toString())
+            }
+        }
+        )
 
         numBtnMap = mapOf(
             Num.ZERO to binding.ibNumberZero,
@@ -99,6 +109,12 @@ class SimpleCalculatorFragment : Fragment() {
                     setEmptyText()
                 }
 
+
+            }
+
+            ibBtnEqual.setOnClickListener {
+                val result = Calculator.instance.calculate(etNumber.text.toString())
+                etNumber.text = SpannableStringBuilder("= ".plus(result))
             }
 
             ibBtnDot.setOnClickListener {
@@ -107,6 +123,7 @@ class SimpleCalculatorFragment : Fragment() {
                 else if (!isDotStandOnNumber())
                     numbersText.text = SpannableStringBuilder(numbersText.text).append(".")
             }
+            ibBtnPercent.setOnClickListener { numbersText.setText(numToPercent()) }
         }
 
         return binding.root
@@ -213,6 +230,31 @@ class SimpleCalculatorFragment : Fragment() {
         Num.SEVEN -> '7'
         Num.EIGHT -> '8'
         Num.NINE -> '9'
+    }
+
+    private fun numToPercent(): String {
+        var str: String = numbersText.text.toString()
+        val symbols = charArrayOf('+', '-', '/', '*')
+        var indexSymbol = -3
+        for (symbol in symbols) {
+            if (str.lastIndexOf(symbol) > indexSymbol) {
+                indexSymbol = str.lastIndexOf(symbol)
+            }
+        }
+        val subStr: String = try {
+            if (indexSymbol == -1) {
+                return if (str.isNotEmpty()) Calculator.instance.percentNum(str).toString() else ""
+            }
+            str.substring(indexSymbol + 1)
+        } catch (exception: StringIndexOutOfBoundsException) {
+            return ""
+        }
+        str = try {
+            str.substring(0, indexSymbol + 1) + Calculator.instance.percentNum(subStr)
+        } catch (exc: StringIndexOutOfBoundsException) {
+            return Calculator.instance.percentNum(subStr).toString()
+        }
+        return str
     }
 
     private enum class Num {
