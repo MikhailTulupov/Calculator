@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Number">
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@drawable/ripple_effect</item>
+    </style>
+    <style name="TableRow">
+    <item name="android:layout_marginBottom">5dp</item>
+    <item name="android:layout_weight">1</item>
+    <item name="android:orientation">vertical</item>
+    <item name="android:weightSum">4</item>
+    </style>
+</resources>
