@@ -237,17 +237,25 @@ class SimpleCalculatorFragment : Fragment() {
 
     private fun numToPercent(): String {
         var str: String = numbersText.text.toString()
-        val symbols = charArrayOf('+', '-', '/', '*')
-        var indexSymbol = -3
+        val symbols = charArrayOf('+', '-', '/', '*', '=')
+        var indexSymbol = -1
         for (symbol in symbols) {
-            if (str.lastIndexOf(symbol) > indexSymbol) {
+            if (str.contains('e', true))
+                break
+            else if (str.lastIndexOf(symbol) > indexSymbol)
                 indexSymbol = str.lastIndexOf(symbol)
-            }
         }
         val subStr: String = try {
-            if (indexSymbol == -1) {
+            if (indexSymbol == -1 && str.contains('=')) {
+                return if (str.isNotEmpty()) "= ".plus(
+                    Calculator.instance.percentNum(
+                        str.substring(
+                            1
+                        )
+                    )
+                ) else ""
+            } else if (indexSymbol == -1)
                 return if (str.isNotEmpty()) Calculator.instance.percentNum(str).toString() else ""
-            }
             str.substring(indexSymbol + 1)
         } catch (exception: StringIndexOutOfBoundsException) {
             return ""
